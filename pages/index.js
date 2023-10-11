@@ -19,7 +19,7 @@ function HomePage() {
 
   return (
     <div>
-      <h1>Reconciliation App - Home Page</h1>
+      <h1>Initialize Reconciliation</h1>
       <FileUploader onUploadSuccess={handleUploadSuccess} />
       {isSuccessfullyUploaded
         ? <button onClick={handleButtonClick}>setAndApplyStrategy</button>
