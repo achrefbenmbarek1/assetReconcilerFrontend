@@ -60,7 +60,7 @@ function PickAndApplyStrategy() {
             </div>
           ))
         )
-        : <button onClick={handleButtonClick}>setAndApplyStrategy</button>}
+        : <button onClick={handleButtonClick}>confirmNumberOfCycles</button>}
     </div>
   );
 }
