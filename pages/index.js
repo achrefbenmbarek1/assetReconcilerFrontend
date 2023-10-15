@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import FileUploader from "../components/FileUploader";
+import FileUploader from "../components/strategy/FileUploader";
 
 function HomePage() {
   const [isSuccessfullyUploaded, setIsSuccessfullyUploaded] = useState(false);
