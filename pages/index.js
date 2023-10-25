@@ -12,7 +12,7 @@ function HomePage() {
   };
   const handleButtonClick = () => {
      router.push({
-      pathname: "/strategy/PickAndApplyStrategy",
+      pathname: "/reconciliation/strategy/PickAndApplyStrategy",
       query: { id: fileName },
     });
   };
@@ -22,7 +22,7 @@ function HomePage() {
       <h1>Initialize Reconciliation</h1>
       <FileUploader onUploadSuccess={handleUploadSuccess} />
       {isSuccessfullyUploaded
-        ? <button onClick={handleButtonClick}>setAndApplyStrategy</button>
+        ? <button id="setAndApplyStrategyButton" onClick={handleButtonClick}>setAndApplyStrategy</button>
         : <button disabled>setAndApplyStrategy</button>}
     </div>
   );

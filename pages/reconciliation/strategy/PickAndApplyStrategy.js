@@ -1,6 +1,8 @@
+
+import CycleComponent from "@/components/strategy/CycleComponent";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import styles from "../../public/css/styles.module.css";
+import styles from "../../../public/css/styles.module.css";
 
 function PickAndApplyStrategy() {
   const [options, setOptions] = useState([]);
@@ -66,6 +68,7 @@ function PickAndApplyStrategy() {
   };
 
   const handleNumberOfReconciliationKeysSelected = () => {
+    console.log("selenium selecteni",numberOfReconciliationKeys)
     setSelectedOptions(
       new Array(numberOfReconciliationKeys).fill(""),
     );
@@ -168,8 +171,18 @@ function PickAndApplyStrategy() {
   };
 
   const handleApplyStrategy = async () => {
-    //don't forget this
     console.log("hello", strategyAlgorithms.current);
+    const isThresholdsValid = strategySimilarityThresholds.current
+      .slice(0, currentIndex)
+      .every((threshold) => parseInt(threshold) >= selectedSimilarityThreshold);
+    strategySimilarityThresholds.current[currentIndex] =
+      selectedSimilarityThreshold;
+    if (!isThresholdsValid) {
+      alert(
+        "the similarity threshold of this cycle need to be lesser or equal than the previous ones",
+      );
+      return;
+    }
     const orderedCycles = selectedOptions?.map((cycle, index) => {
       return {
         "similarityThreshold": parseInt(
@@ -202,7 +215,10 @@ function PickAndApplyStrategy() {
       },
     );
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      alert(
+        "Error: someone else is probably adding a strategy at the time that you tried to add your strategy too please try clicking on the button again ",
+      );
+      return;
     }
     alert(
       "the strategy is being applied and the reconciliation is gonna happen soon, if the data isn't reconciled yet feel free to create other strategies or do other reconciliations while this reconciliation is finishing in the background",
@@ -236,11 +252,11 @@ function PickAndApplyStrategy() {
             <div key={`reconciliationKey-${index}`}>
               {selectedOption}
               <select
+                id={`reconciliationDropdown-${index}`}
                 value={selectedOption}
                 onChange={(e) =>
                   handleReconciliationKeySelected(index, e.target.value)}
                 onClick={() => {
-                  // setOptions(potentialKeys.current);
                   console.log("za3ma", potentialKeys.current);
                 }}
               >
@@ -260,6 +276,7 @@ function PickAndApplyStrategy() {
           <div>
             <div>
               <input
+                id="numberOfReconciliationKeys"
                 type="number"
                 className={styles.inputField}
                 placeholder="Enter the number of reconciliation keys"
@@ -270,6 +287,7 @@ function PickAndApplyStrategy() {
               />
             </div>
             <button
+              id="confirmNumberOfReconciliationKeys"
               className={styles.confirmButton}
               onClick={handleNumberOfReconciliationKeysSelected}
             >
@@ -280,6 +298,7 @@ function PickAndApplyStrategy() {
       {isNumberOfReconciliationKeysSelected && !areReconciliationKeysSelected &&
         (
           <button
+            id="confirmReconciliationKeysButton"
             className={styles.confirmButton}
             onClick={handleReconciliationKeysSelected}
           >
@@ -289,73 +308,20 @@ function PickAndApplyStrategy() {
       {isNumberOfCyclesSelected && areReconciliationKeysSelected &&
         (
           selectedOptions.map((selectedOption, index) => (
-            <div
-              key={`cycle-${index}`}
-              style={{ display: index === currentIndex ? "block" : "none" }}
-            >
-              <h2>Cycle {index}:</h2>
-              <h3>reconciliation keys:</h3>
-              <select
-                onChange={(e) =>
-                  handleReconciliationKeysSelectedForCycle(
-                    index,
-                    e.target.selectedOptions,
-                  )}
-                multiple={true}
-              >
-                {cyclesReconciliationKeys?.length
-                  ? cyclesReconciliationKeys?.at(index - 1)?.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))
-                  : selectedOptionsRef.current?.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-              </select>
-              <h3>categorisation precision:</h3>
-              <select
-                onChange={(e) =>
-                  handleCategorisationKeySelectedForCycle(
-                    e.target.value,
-                  )}
-              >
-                {categorizationPrecisionsOfTheStrategy.current?.at(index)?.map((
-                  option,
-                ) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-              <h3>similarity threshold:</h3>
-              <input
-                type="number"
-                value={selectedSimilarityThreshold}
-                onChange={(e) => {
-                  handleSimilarityThresholdChange(e.target.value);
-                }}
-                min="0"
-                max="100"
-              />
-              <h3>algorithm:</h3>
-              <select
-                onChange={(e) =>
-                  handleAlgorithmSelectedForCycle(
-                    e.target.value,
-                  )}
-              >
-                {allAlgorithms.current?.map((algorithm) => {
-                  return (
-                    <option key={algorithm} value={algorithm}>
-                      {algorithm}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+            <CycleComponent
+              key={index}
+              index={index}
+              currentIndex={currentIndex}
+              cyclesReconciliationKeys={cyclesReconciliationKeys}
+              selectedOptionsRef={selectedOptionsRef}
+              categorizationPrecisionsOfTheStrategy={categorizationPrecisionsOfTheStrategy}
+              selectedSimilarityThreshold={selectedSimilarityThreshold}
+              allAlgorithms={allAlgorithms}
+              handleReconciliationKeysSelectedForCycle={handleReconciliationKeysSelectedForCycle}
+              handleCategorisationKeySelectedForCycle={handleCategorisationKeySelectedForCycle}
+              handleSimilarityThresholdChange={handleSimilarityThresholdChange}
+              handleAlgorithmSelectedForCycle={handleAlgorithmSelectedForCycle}
+            />
           ))
         )}
       {isNumberOfCyclesSelected && areReconciliationKeysSelected &&
@@ -390,6 +356,7 @@ function PickAndApplyStrategy() {
           <div>
             <div>
               <input
+                id="numberOfCyclesInput"
                 type="number"
                 className={styles.inputField}
                 placeholder="Enter the number of cycles"

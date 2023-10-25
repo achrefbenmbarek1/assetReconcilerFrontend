@@ -1,22 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from "axios";
 import { FileUpload } from "primereact/fileupload";
-import { useRouter } from "next/router";
 
 function FileUploader({onUploadSuccess}) {
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const router = useRouter()
-
-  const handleFileUpload = (event) => {
-    const file = event.files[0];
-    console.log("file", file);
-    setUploadedFile(file);
-  };
 
   const onUpload = async ({ files }) => {
     try {
       const formData = new FormData();
-      console.log(uploadedFile);
       formData.append("fileUploaded", files[0]);
       console.log("formdata", formData);
 
@@ -34,7 +24,7 @@ function FileUploader({onUploadSuccess}) {
 
     } catch (error) {
       console.log(error);
-      throw error;
+      alert("Error: make sure that the app didn't do reconciliation on that file alredy")
     }
   };
 
@@ -45,6 +35,8 @@ function FileUploader({onUploadSuccess}) {
         customUpload={true}
         maxFileSize={1000000}
         uploadHandler={onUpload}
+        uploadLabel={"Initialize Reconciliation"}
+        accept=".xlsx"
         emptyTemplate={
           <p className="m-0">Drag and drop files here to upload.</p>
         }
